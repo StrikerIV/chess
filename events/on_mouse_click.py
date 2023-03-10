@@ -3,92 +3,106 @@ from globals import *
 from func.draw_moves import *
 from func.calculate_moves import *
 
+
 def on_click(event):
     global heldPieceData
-    
-    xPos = event.x // 100
-    yPos = event.y // 100
 
-    pieceId = boardData[xPos][yPos]
-    pieceName = boardSetup[yPos][xPos]
+    x_pos = event.x // 100
+    y_pos = event.y // 100
 
+    piece_id = boardData[x_pos][y_pos]
+    piece_name = boardSetup[y_pos][x_pos]
+    print(piece_name, "name of piece")
     # (isHeld, piece, name, positions, moves)
     (holding, heldPieceId, heldPieceName, position, moves) = heldPieceData
 
-    if (xPos > 7 or yPos > 7):  # out of bounds leaving the board
+    if x_pos > 7 or y_pos > 7:  # out of bounds leaving the board
         return
 
-    if (holding):  # a piece is currently being held
-        print(heldPieceData, "held piece after holding")
-        if (xPos == position[0] and yPos == position[1]):  # if the piece is being dropped on the same space it was picked up from
+    if holding:  # a piece is currently being held
+        if x_pos == position[0] and y_pos == position[1]:  # if the piece is being dropped on the same space it was picked up from
             return
 
-        if (moves[0] == []):  # if the piece has moves
+        if not moves[0]:  # if the piece has moves
             return
 
         # check if they clicked on one of their own pieces
-        if (boardSetup[yPos][xPos] != ""):
-            if (boardSetup[yPos][xPos][0] == heldPieceName[0]):
+        if boardSetup[y_pos][x_pos] != "":
+            if boardSetup[y_pos][x_pos][0] == heldPieceName[0]:
                 # if they did, then set the held piece to that piece
                 print("SWAP PIECE")
 
-        if (convert_notation((xPos, yPos), True) in moves[0]):  # if the piece is being dropped on a valid move (moving the piece)
+        if convert_notation((x_pos, y_pos), True) in moves[
+            0]:  # if the piece is being dropped on a valid move (moving the piece)
+
+            moved_pieces.append(heldPieceName)  # append to show the piece has been moved
+            print(moved_pieces, "moved pieces")
+
             for move in moves[1]:  # delete the previously rendered moves as the piece has been moved
                 canvas.delete(move)
-            
-            canvas.delete(heldPieceId) # delete the piece being held
 
-            if (boardSetup[yPos][xPos] != ""):  # if the space the piece is being dropped on is occupied (taking a piece)
-                canvas.delete(boardData[xPos][yPos])  # delete the piece to be taken
-                takenPieces.append(boardSetup[yPos][xPos])  # add the piece to the taken pieces list                                  
+            canvas.delete(heldPieceId)  # delete the piece being held
 
-            boardData[xPos][yPos] = boardData[position[0]][position[1]]  # move the piece to the new location in the board data
+            if boardSetup[y_pos][
+                x_pos] != "":  # if the space the piece is being dropped on is occupied (taking a piece)
+                canvas.delete(boardData[x_pos][y_pos])  # delete the piece to be taken
+                takenPieces.append(boardSetup[y_pos][
+                                       x_pos])  # add the piece to the taken pieces list
+
+            boardData[x_pos][y_pos] = boardData[position[0]][
+                position[1]]  # move the piece to the new location in the board data
             boardData[position[0]][position[1]] = ""  # remove the piece from the old location in the board data
 
-            boardSetup[yPos][xPos] = boardSetup[position[1]][position[0]]  # move the piece to the new location in the board setup
-            boardSetup[position[1]][position[0]] = "" # remove the piece from the old location in the board setup
+            boardSetup[y_pos][x_pos] = boardSetup[position[1]][
+                position[0]]  # move the piece to the new location in the board setup
+            boardSetup[position[1]][position[0]] = ""  # remove the piece from the old location in the board setup
 
             # create the new piece
-            heldPieceSpriteName = heldPieceName.replace(heldPieceName[-1], '')
-            newPieceId = canvas.create_image((xPos * 100), (yPos * 100), image=globals()[heldPieceSpriteName], anchor=NW)
-            boardData[xPos][yPos] = newPieceId  # add the new piece to the board data
+            held_piece_sprite_name = heldPieceName.replace(heldPieceName[-1], '')
+            new_piece_id = canvas.create_image((x_pos * 100), (y_pos * 100), image=globals()[held_piece_sprite_name],
+                                               anchor=NW)
+
+            boardData[x_pos][y_pos] = new_piece_id  # add the new piece to the board data
 
             # raise the piece to the top of the canvas
-            canvas.tag_raise(newPieceId)
+            canvas.tag_raise(new_piece_id)
 
-            newColor = "w" if heldPieceName[0] == "b" else "b"
+            new_color = "w" if heldPieceName[0] == "b" else "b"
 
             # before the turn is over, check if the king is in check
-            movedPieceMoves = calculate_moves((newPieceId, heldPieceName), (xPos, yPos))
+            moved_piece_moves = calculate_moves((new_piece_id, heldPieceName), (x_pos, y_pos))
 
-            for move in movedPieceMoves:
+            for move in moved_piece_moves:
 
-                if (move == None):
+                if move is None:
                     continue
 
                 loc = convert_notation(move, False)
 
-                if (boardSetup[loc[1]][loc[0]] == newColor + "King1"):
+                if boardSetup[loc[1]][loc[0]] == new_color + "King1":
                     # render a red circle around the king to indicate it is in check
                     canvas.create_oval(
-                (loc[0] * 100)+5, (loc[1] * 100)+5, (loc[0] * 100) + 95, (loc[1] * 100) + 95, outline="red", width=5)
+                        (loc[0] * 100) + 5, (loc[1] * 100) + 5, (loc[0] * 100) + 95, (loc[1] * 100) + 95, outline="red",
+                        width=5)
                     break
-            heldPieceData = (False, "", newColor, (0, 0), ([], []))  # reset the held piece data
+
+            heldPieceData = (False, "", new_color, (0, 0), ([], []))  # reset the held piece data
 
     # pick up a piece
-    elif (boardSetup[yPos][xPos] != ""):  # if the space clicked on is a piece (not empty)
-        if (pieceName[0] == heldPieceName[0]):  # if the color is of the player's piece
+    elif boardSetup[y_pos][x_pos] != "":  # if the space clicked on is a piece (not empty)
+        if piece_name[0] == heldPieceName[0]:  # if the color is of the player's piece
 
-            rendered_piece_background = canvas.create_rectangle(  # make the background yellow to indicate the piece is being held
-                (xPos * 100), (yPos * 100), (xPos * 100) + 100, (yPos * 100) + 100, fill="yellow", outline="yellow")
-            
-            moves = calculate_moves((pieceId, pieceName), (xPos, yPos))
+            rendered_piece_background = canvas.create_rectangle(
+                # make the background yellow to indicate the piece is being held
+                (x_pos * 100), (y_pos * 100), (x_pos * 100) + 100, (y_pos * 100) + 100, fill="yellow", outline="yellow")
+
+            moves = calculate_moves((piece_id, piece_name), (x_pos, y_pos))
             rendered_moves = draw_moves(moves)
             rendered_moves.append(rendered_piece_background)
 
-            heldPieceData = (True, pieceId, pieceName,
-                             (xPos, yPos), (moves, rendered_moves))  # update the held piece data
+            heldPieceData = (True, piece_id, piece_name,
+                             (x_pos, y_pos), (moves, rendered_moves))  # update the held piece data
 
-            canvas.tag_raise(pieceId)  # place the piece on top of the selection background
+            canvas.tag_raise(piece_id)  # place the piece on top of the selection background
     else:
         return

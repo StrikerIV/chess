@@ -8,7 +8,8 @@ def rotate_notation(position):  # position = chess notation
     letter = chr(x + 97)
     number = str(abs(y) + 1)
 
-    return (letter + number)
+    return letter + number
+
 
 def rotate_board(board):
     for _ in range(2):

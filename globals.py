@@ -28,6 +28,7 @@ boardData = [
 ]
 
 takenPieces = [[], []]  # [black, white]
+moved_pieces = []
 
 bPawn = SvgImage(file="sprites/black/pawn.svg", scale=2.25)
 bKnight = SvgImage(file="sprites/black/knight.svg", scale=2.25)

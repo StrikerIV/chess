@@ -1,6 +1,3 @@
-from tkinter import *
-from tksvg import SvgImage
-
 from globals import *
 
 from events.on_hover import on_hover
@@ -15,10 +12,10 @@ for x in range(0, bLength, int(bLength/tiles)):
 
         draw_square(x, y, 100, "white" if (x + y) % 200 == 0 else "gray28")
 
-        if (boardSetup[yPos][xPos] != ""):
+        if boardSetup[yPos][xPos] != "":
             piece_name = boardSetup[yPos][xPos]
 
-            if (piece_name[-1].isdigit()):
+            if piece_name[-1].isdigit():
                 piece_name = piece_name.replace(piece_name[-1], "")
 
             piece = canvas.create_image(
