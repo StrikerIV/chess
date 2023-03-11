@@ -1,26 +1,37 @@
 from tkinter import *
 from tksvg import SvgImage
 
-length, width = 800, 1250
+length, width = 799, 799
 bLength, bWidth = 800, 800
 tiles = 8
 
 root = Tk()
 canvas = Canvas(height=length, width=width)
 
+# boardSetup = [
+#     ["bRook1", "bKnight1", "bBishop1", "bQueen1",
+#         "bKing1", "bBishop2", "bKnight2", "bRook2"],
+#     ["bPawn1", "bPawn2", "bPawn3", "bPawn4",
+#         "bPawn5", "bPawn6", "bPawn7", "bPawn8"],
+#     ["", "", "", "", "", "", "", ""],
+#     ["", "", "", "", "", "", "", ""],
+#     ["", "", "", "", "", "", "", ""],
+#     ["", "", "", "", "", "", "", ""],
+#     ["wPawn1", "wPawn2", "wPawn3", "wPawn4",
+#         "wPawn5", "wPawn6", "wPawn7", "wPawn8"],
+#     ["wRook1", "wKnight1", "wBishop1", "wQueen1",
+#         "wKing1", "wBishop2", "wKnight2", "wRook2"],
+# ]
+
 boardSetup = [
-    ["bRook1", "bKnight1", "bBishop1", "bQueen1",
-        "bKing1", "bBishop2", "bKnight2", "bRook2"],
-    ["bPawn1", "bPawn2", "bPawn3", "bPawn4",
-        "bPawn5", "bPawn6", "bPawn7", "bPawn8"],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", ""],
+    ["", "", "", "bPawn1", "bPawn2", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["wPawn1", "wPawn2", "wPawn3", "wPawn4",
-        "wPawn5", "wPawn6", "wPawn7", "wPawn8"],
-    ["wRook1", "wKnight1", "wBishop1", "wQueen1",
-        "wKing1", "wBishop2", "wKnight2", "wRook2"],
+    ["wRook1", "", "", "", "wKing1", "", "", ""],
 ]
 
 boardData = [

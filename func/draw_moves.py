@@ -7,6 +7,8 @@ def draw_moves(moves):
     rendered = []
 
     for move in moves:
+        (move, capture) = move
+        
         if move is None:
             continue
 

@@ -11,7 +11,6 @@ def convert_notation(position, chess_notation=False): # chess_notation = True wh
 
         return letter + str(num)
     else:  # convert (0, 0), (1, 1), (2, 2), etc to (a1, b2, c3, etc)
-        print(position, "convert test 2")
         x = ord(position[0]) - 97
         y = abs(8 - int(position[1]))
 
