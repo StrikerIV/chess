@@ -7,6 +7,7 @@ from func.locate_piece import locate_piece
 from func.move_piece import move_piece, castle
 from func.unrender_moves import unrender_moves
 
+
 def on_click(event):
     global boardSetup, boardData, heldPieceData, rendered_moves
 
@@ -37,10 +38,10 @@ def on_click(event):
         piece_name = boardSetup[y_pos][x_pos]
         castling = False
 
-        if available_moves[holding_piece_name] != []: # check if attempting to castle
+        if available_moves[holding_piece_name]: # check if attempting to castle
             move = [move for move in available_moves[holding_piece_name] if tile in move[0]]
             
-            if move != []:
+            if move:
                 move = move[0]
                 if "castle" in move[1] if type(move[1]) == list else move[1]:
                     castling = True
@@ -68,11 +69,24 @@ def on_click(event):
                     heldPieceData = (False, "b" if heldPieceData[1][0] == "w" else "w")
                 else:
                     if "castle" in move_type:
-                        king_tile = locate_piece(holding_piece_name)
+                        x_offset = 0
 
-                        #unrender_moves(rendered_moves)
+                        if "-q" in move_type:
+                            if "-m" in move_type: # queen-side middle square,
+                                x_offset = 1
+                            else: # queen-side rook square
+                                x_offset = 0
+                        else: # king-side castle
+                            if "-m" in move_type:
+                                x_offset = -2
 
-                        #(boardData, boardSetup) = castle(held_piece_tile, tile, move[1])
+                        rook_name = boardSetup[y_pos][x_pos + x_offset]
+
+                        unrender_moves(rendered_moves)
+
+                        (boardData, boardSetup) = castle(holding_piece_name, rook_name, move_type)
+
+                        heldPieceData = (False, "b" if heldPieceData[1][0] == "w" else "w")
                     else:
                         print("capture")
     else:
@@ -99,4 +113,4 @@ def on_click(event):
         else:
             king_moves = available_moves["bKing1"]
         
-        print(king_moves)
+        #print(king_moves)

@@ -140,6 +140,7 @@ def calculate_moves(piece_data, position):
         
         # castling
         if name not in moved_pieces: # if the king has not been moved
+            print(name, moved_pieces, "not moved ayo?")
             color = name[0]
 
             if color + "Rook1" not in moved_pieces: # left rook has not been moved (castling to the left)

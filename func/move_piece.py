@@ -2,8 +2,9 @@ from globals import *
 
 from func.convert_notation import convert_notation
 from func.unrender_moves import unrender_moves
+from func.locate_piece import locate_piece
 
-def move_piece(old, new, type=False): # old & new are chess notation, move the piece at old to new, assume the move is valid
+def move_piece(old, new, move_type=False): # old & new are chess notation, move the piece at old to new, assume the move is valid
 
     (old_pos, piece_id) = old
     
@@ -24,7 +25,8 @@ def move_piece(old, new, type=False): # old & new are chess notation, move the p
 
     moved_pieces.append(piece_name)
 
-    if type == "enPassant":
+    if move_type == "enPassant":
+        print("en passanting")
         captured_pawn_id = boardData[new_y + 1][new_x]
         captured_pawn_name = boardSetup[new_y + 1][new_x]
 
@@ -38,10 +40,7 @@ def move_piece(old, new, type=False): # old & new are chess notation, move the p
         else:
             captured_pieces[0].append(captured_pawn_name)
 
-    if type == "castle":
-        print("castle")    
-
-    new_piece = canvas.create_image((new_x * 100) + 50, ((new_y) * 100) + 50, image=globals()[piece_sprite_name]) # create a new piece at the new position
+    new_piece = canvas.create_image((new_x * 100) + 50, (new_y * 100) + 50, image=globals()[piece_sprite_name]) # create a new piece at the new position
     
     # update the board data
     boardData[old_y][old_x] = "" # good
@@ -50,8 +49,50 @@ def move_piece(old, new, type=False): # old & new are chess notation, move the p
     boardSetup[old_y][old_x] = "" # good
     boardSetup[new_y][new_x] = piece_name
 
-    return (boardData, boardSetup)
+    return boardData, boardSetup
+
 
 def castle(king, rook, flags): # castle the king and rook
-    king_pos = convert_notation(king, False)
-    rook_pos = convert_notation(rook, False)
+
+    king_tile = locate_piece(king, True)
+    rook_tile = locate_piece(rook, True)
+
+    (king_tile, king_id) = king_tile
+    (rook_tile, rook_id) = rook_tile
+
+    (king_x, king_y) = (7, 2)
+    (rook_x, rook_y) = (7, 3)
+
+    if king[0] == "b":
+        king_x = abs(7 - king_x)
+        rook_x = abs(7 - rook_x)
+
+    canvas.delete(king_id)
+    canvas.delete(rook_id)
+
+    king_sprite_name = king.replace(king[-1], "")
+    rook_sprite_name = rook.replace(rook[-1], "")
+
+    new_king = canvas.create_image((king_y * 100) + 50, (king_x * 100) + 50,
+                                    image=globals()[king_sprite_name])  # create a new piece at the new position
+
+    new_rook = canvas.create_image((rook_y * 100) + 50, (rook_x * 100) + 50,
+                                   image=globals()[rook_sprite_name])  # create a new piece at the new position
+
+    moved_pieces.append(king)
+    moved_pieces.append(rook)
+
+    boardSetup[king_x][king_y + 2] = "" # good
+    boardSetup[rook_x][rook_y - 3] = ""
+    boardSetup[king_x][king_y] = king
+    boardSetup[rook_x][rook_y] = rook
+
+    boardData[king_x][king_y + 2] = "" # good
+    boardData[rook_x][rook_y - 3] = ""
+    boardData[king_x][king_y] = new_king
+    boardData[rook_x][rook_y] = new_rook
+
+    return boardData, boardSetup
+
+
+
