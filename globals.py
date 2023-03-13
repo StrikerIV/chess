@@ -8,38 +8,38 @@ tiles = 8
 root = Tk()
 canvas = Canvas(height=length, width=width)
 
-# boardSetup = [
-#     ["bRook1", "bKnight1", "bBishop1", "bQueen1",
-#         "bKing1", "bBishop2", "bKnight2", "bRook2"],
-#     ["bPawn1", "bPawn2", "bPawn3", "bPawn4",
-#         "bPawn5", "bPawn6", "bPawn7", "bPawn8"],
-#     ["", "", "", "", "", "", "", ""],
-#     ["", "", "", "", "", "", "", ""],
-#     ["", "", "", "", "", "", "", ""],
-#     ["", "", "", "", "", "", "", ""],
-#     ["wPawn1", "wPawn2", "wPawn3", "wPawn4",
-#         "wPawn5", "wPawn6", "wPawn7", "wPawn8"],
-#     ["wRook1", "wKnight1", "wBishop1", "wQueen1",
-#         "wKing1", "wBishop2", "wKnight2", "wRook2"],
-# ]
-
 boardSetup = [
+    ["bRook1", "bKnight1", "bBishop1", "bQueen1", "bKing1", "bBishop2", "bKnight2", "bRook2"],
+    ["bPawn1", "bPawn2", "bPawn3", "bPawn4", "bPawn5", "bPawn6", "bPawn7", "bPawn8"],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "bPawn1", "bPawn2", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["wRook1", "", "", "", "wKing1", "", "", ""],
+    ["wPawn1", "wPawn2", "wPawn3", "wPawn4", "wPawn5", "wPawn6", "wPawn7", "wPawn8"],
+    ["wRook1", "", "", "","wKing1", "wBishop2", "wKnight2", "wRook2"],
 ]
+
+
+
+# boardSetup = [
+#     ["", "", "", "", "", "", "", ""],
+#     ["", "bPawn1", "", "", "", "", "", ""],
+#     ["", "", "wPawn1", "", "", "", "", ""],
+#     ["", "", "", "", "", "", "", ""],
+#     ["", "", "", "", "", "", "", ""],
+#     ["", "", "", "", "", "", "", ""],
+#     ["", "", "", "", "", "", "", ""],
+#     ["", "", "", "", "", "", "", ""],
+# ]
 
 boardData = [
     [], [], [], [], [], [], [], []
 ]
 
-takenPieces = [[], []]  # [black, white]
+captured_pieces = [[], []]  # [black, white]
+available_moves = {} # (piece, moves)
 moved_pieces = []
+rendered_moves = []
 
 bPawn = SvgImage(file="sprites/black/pawn.svg", scale=2.25)
 bKnight = SvgImage(file="sprites/black/knight.svg", scale=2.25)
@@ -55,5 +55,5 @@ wRook = SvgImage(file="sprites/white/rook.svg", scale=2.25)
 wQueen = SvgImage(file="sprites/white/queen.svg", scale=2.25)
 wKing = SvgImage(file="sprites/white/king.svg", scale=2.25)
 
-heldPieceData = (False, None, "w", (0, 0), ([], []))  # (isHeld, piece, name, positions, moves, {other data})
+heldPieceData = (False, "w")  # (holding a piece, name of the piece) 
 inCheck = False

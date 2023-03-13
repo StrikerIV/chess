@@ -29,30 +29,31 @@ def calculate_moves(piece_data, position):
 
         # attack moves 
         if xpos > 0 and board[ypos - 1][xpos - 1] != "" and board[ypos - 1][xpos - 1][0] != name[0]:
-            moves.append((convert_notation((xpos - 1, ypos - 1), True), None))
+            moves.append((convert_notation((xpos - 1, ypos - 1), True), True))
 
         if xpos < 7 and board[ypos - 1][xpos + 1] != "" and board[ypos - 1][xpos + 1][0] != name[0]:
-            moves.append((convert_notation((xpos + 1, ypos - 1), True), None))
+            moves.append((convert_notation((xpos + 1, ypos - 1), True), True))
 
         # en passant
         # check if the moves required for en passant are possible
         # then check if the pawn is in the correct position to perform en passant
-        if len(moved_pieces) > 0: # if there are any moves in the moved_pieces list
+
+        if len(moved_pieces) > 1: # if there are any moves in the moved_pieces list
+
             left_piece = board[ypos][xpos - 1] if xpos > 0 else ""
             right_piece = board[ypos][xpos + 1] if xpos < 7 else ""
             opposite_color = "w" if name[0] == "b" else "b" 
 
-            
             if not left_piece == "": # there is a piece to the left
                 if (opposite_color + "Pawn") in left_piece: # piece is an opposite color pawn
-                    if moved_pieces[-1] == left_piece and ypos == 3: # the last move was a pawn move and pawn is on correc row
+                    if moved_pieces[-1] == left_piece and ypos == 3: # the last move was a pawn move and pawn is on correct row
                         total_pawn_moves = [i for i, x in enumerate(moved_pieces) if x == left_piece]
                         if len(total_pawn_moves) == 1: # if the pawn has only moved once (meaning they moved 2 spaces)
                             moves.append((convert_notation((xpos - 1, ypos - 1), True), "enPassant"))
 
             if not right_piece == "": # there is a piece to the right
                 if (opposite_color + "Pawn") in right_piece: # piece is an opposite color pawn
-                    if moved_pieces[-1] == right_piece and ypos == 3: # the last move was a pawn move and pawn is on correc row
+                    if moved_pieces[-1] == right_piece and ypos == 3: # the last move was a pawn move and pawn is on correct row
                         total_pawn_moves = [i for i, x in enumerate(moved_pieces) if x == right_piece]
                         if len(total_pawn_moves) == 1: # if the pawn has only moved once (meaning they moved 2 spaces)
                             moves.append((convert_notation((xpos + 1, ypos - 1), True), "enPassant"))
@@ -71,7 +72,7 @@ def calculate_moves(piece_data, position):
                 if board[ty][tx] == "":
                     moves.append((convert_notation((tx, ty), True), None))
                 elif board[ty][tx][0] != name[0]:
-                    moves.append((convert_notation((tx, ty), True), None))
+                    moves.append((convert_notation((tx, ty), True), True))
 
     if "bBishop" in name or "wBishop" in name or "bQueen" in name or "wQueen" in name: # calculate bishop moves and queen moves (since they move the same way)
         bishop_moves = [
@@ -90,7 +91,7 @@ def calculate_moves(piece_data, position):
                     if board[ty][tx] == "":
                         moves.append((convert_notation((tx, ty), True), None))
                     elif board[ty][tx][0] != name[0]:
-                        moves.append((convert_notation((tx, ty), True), None))
+                        moves.append((convert_notation((tx, ty), True), True))
                         break
                     else:
                         break
@@ -114,7 +115,7 @@ def calculate_moves(piece_data, position):
                     if board[ty][tx] == "":
                         moves.append((convert_notation((tx, ty), True), None))
                     elif board[ty][tx][0] != name[0]:
-                        moves.append((convert_notation((tx, ty), True), None))
+                        moves.append((convert_notation((tx, ty), True), True))
                         break
                     else:
                         break
@@ -135,7 +136,7 @@ def calculate_moves(piece_data, position):
                 if board[ty][tx] == "":
                     moves.append((convert_notation((tx, ty), True), None))
                 elif board[ty][tx][0] != name[0]:
-                    moves.append((convert_notation((tx, ty), True), None))
+                    moves.append((convert_notation((tx, ty), True), True))
         
         # castling
         if name not in moved_pieces: # if the king has not been moved
@@ -143,11 +144,14 @@ def calculate_moves(piece_data, position):
 
             if color + "Rook1" not in moved_pieces: # left rook has not been moved (castling to the left)
                 if board[ypos][1] == "" and board[ypos][2] == "" and board[ypos][3] == "": # if the squares are empty
-                    moves.append((convert_notation((2, ypos), True), "castling"))
-                    moves.append((convert_notation((0, ypos), True), "castling"))
+                    moves.append((convert_notation((2, ypos), True), "castle-m")) # middle square for castling ( clicked on the middle square)
+                    moves.append((convert_notation((0, ypos), True), "castle")) # left square for castling (clicked on the rook)
+                
+            if color + "Rook2" not in moved_pieces: # right rook has not been moved (castling to the left)
+                if board[ypos][5] == "" and board[ypos][6] == "": # if the squares are empty
+                    moves.append((convert_notation((6, ypos), True), "castle-m-q")) # middle square for castling ( clicked on the middle square)
+                    moves.append((convert_notation((7, ypos), True), "castle-q")) # left square for castling (clicked on the rook)
                     
-
-
     if name[0] == "b": # rotate the moves back to the original board (for the black pieces)
         new_moves = []
 
