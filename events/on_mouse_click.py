@@ -109,12 +109,20 @@ def on_click(event):
                         heldPieceData = (
                             False, "b" if heldPieceData[1][0] == "w" else "w")
                     else: # take the piece!
-                        held_piece_tile = locate_piece(holding_piece_name, True)
-                        
+                        held_piece_tile = locate_piece(holding_piece_name)
+
+                        (t_x, t_y) = convert_notation(tile)
+                        taken_piece_name = boardSetup[t_y][t_x]
+
                         unrender_moves(rendered_moves)  # unrender all moves
                         
                         (boardData, boardSetup) = capture_piece(held_piece_tile, tile)
-                        
+
+                        if taken_piece_name[0] == "w":
+                            captured_pieces[1].append(taken_piece_name)
+                        else:
+                            captured_pieces[0].append(taken_piece_name)
+
                         heldPieceData = (
                             False, "b" if heldPieceData[1][0] == "w" else "w")
     else:
@@ -131,14 +139,24 @@ def on_click(event):
             rendered_moves = piece_data[1]
 
     # TODO: check if the king is in check
-    current_turn = heldPieceData[1]
 
     if holding:
-        king_moves = []
-
-        if current_turn == "w":  # white's turn, see if white is in check
-            king_moves = available_moves["wKing1"]
+        king = ""
+        if holding_piece_name[0] == "b":
+            king = "wKing1"
         else:
-            king_moves = available_moves["bKing1"]
+            king = "bKing1"
 
-        # print(king_moves)
+        king_moves = available_moves[king]
+        king_tile = locate_piece(king)
+
+        # loop through all available moves on the board
+        for piece in available_moves:
+            moves = available_moves[piece]
+
+            for move in moves:
+                if move in king_moves:
+                    # remove move as it would put the king in check
+                    print(f"move {move} is invalid for kind")
+                elif king_tile in king_moves:
+                    print(f"king is in check with move {king_tile} by piece {piece}")

@@ -14,6 +14,7 @@ def capture_piece(piece_data, tile): # piece takes on tile (assume the move is v
     taken_id = boardData[taken_y][taken_x]
     
     canvas.delete(taken_id)
+
     
     return move_piece(piece_data, tile)
 
