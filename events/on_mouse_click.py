@@ -6,7 +6,7 @@ from func.deselect_piece import deselect_piece
 from func.locate_piece import locate_piece
 from func.move_piece import move_piece, castle
 from func.unrender_moves import unrender_moves
-
+from func.capture_piece import capture_piece
 
 def on_click(event):
     global boardSetup, boardData, heldPieceData, rendered_moves
@@ -18,7 +18,7 @@ def on_click(event):
         return
 
     tile = convert_notation((x_pos, y_pos), True)
-    print(tile, "clicked tile")
+
     (holding, holding_piece_name) = heldPieceData
 
     holding_piece_color = holding_piece_name[0]
@@ -27,10 +27,10 @@ def on_click(event):
         for y in range(0, 8):
             piece_id = boardData[y][x]
             piece_name = boardSetup[y][x]
-            
+
             if piece_id == "":
                 continue
-            
+
             moves = calculate_moves((piece_id, piece_name), (x, y))
             available_moves[piece_name] = moves
 
@@ -38,45 +38,54 @@ def on_click(event):
         piece_name = boardSetup[y_pos][x_pos]
         castling = False
 
-        if available_moves[holding_piece_name]: # check if attempting to castle
-            move = [move for move in available_moves[holding_piece_name] if tile in move[0]]
-            
+        if available_moves[holding_piece_name]:  # check if attempting to castle
+            move = [move for move in available_moves[holding_piece_name]
+                    if tile in move[0]]
+
             if move:
                 move = move[0]
                 if "castle" in move[1] if type(move[1]) == list else move[1]:
                     castling = True
 
-        if not piece_name == "" and holding_piece_color == piece_name[0] and castling == False: # swap pieces
-            
-            heldPieceData = deselect_piece(rendered_moves) # deselect the piece
+        # swap pieces
+        if not piece_name == "" and holding_piece_color == piece_name[0] and castling == False:
 
-            piece_data = select_piece(tile) # select the new piece
+            heldPieceData = deselect_piece(
+                rendered_moves)  # deselect the piece
+
+            piece_data = select_piece(tile)  # select the new piece
 
             heldPieceData = piece_data[0]
             rendered_moves = piece_data[1]
         else:
-            move = [move for move in available_moves[holding_piece_name] if tile in move[0]][0]
-            (move, move_type) = move
+            move = [move for move in available_moves[holding_piece_name] if tile in move[0]]
+
+            if not move:
+                return
+            
+            (move, move_type) = move[0]
 
             if any(tile in move[0] for move in available_moves[holding_piece_name]):
                 if boardSetup[y_pos][x_pos] == "" and castling == False:
                     held_piece_tile = locate_piece(holding_piece_name)
 
-                    unrender_moves(rendered_moves) # unrender all moves
-                    
-                    (boardData, boardSetup) = move_piece(held_piece_tile, tile, move[1]) # move from held piece to tile
-                    
-                    heldPieceData = (False, "b" if heldPieceData[1][0] == "w" else "w")
+                    unrender_moves(rendered_moves)  # unrender all moves
+
+                    (boardData, boardSetup) = move_piece(held_piece_tile,
+                                                         tile, move[1])  # move from held piece to tile
+
+                    heldPieceData = (
+                        False, "b" if heldPieceData[1][0] == "w" else "w")
                 else:
-                    if "castle" in move_type:
+                    if type(move_type) == str and "castle" in move_type: # castling of the kings
                         x_offset = 0
 
                         if "-q" in move_type:
-                            if "-m" in move_type: # queen-side middle square,
+                            if "-m" in move_type:  # queen-side middle square,
                                 x_offset = 1
-                            else: # queen-side rook square
+                            else:  # queen-side rook square
                                 x_offset = 0
-                        else: # king-side castle
+                        else:  # king-side castle
                             if "-m" in move_type:
                                 x_offset = -2
 
@@ -84,18 +93,37 @@ def on_click(event):
 
                         unrender_moves(rendered_moves)
 
-                        (boardData, boardSetup) = castle(holding_piece_name, rook_name, move_type)
+                        (boardData, boardSetup) = castle(
+                            holding_piece_name, rook_name, move_type)
 
-                        heldPieceData = (False, "b" if heldPieceData[1][0] == "w" else "w")
-                    else:
-                        print("capture")
+                        heldPieceData = (
+                            False, "b" if heldPieceData[1][0] == "w" else "w")
+                    elif type(move_type) == str and move_type == "enPassant": # en passant for pawns
+                        held_piece_tile = locate_piece(holding_piece_name)
+
+                        unrender_moves(rendered_moves)  # unrender all moves
+
+                        (boardData, boardSetup) = move_piece(held_piece_tile,
+                                                            tile, move_type)  # move from held piece to tile
+
+                        heldPieceData = (
+                            False, "b" if heldPieceData[1][0] == "w" else "w")
+                    else: # take the piece!
+                        held_piece_tile = locate_piece(holding_piece_name, True)
+                        
+                        unrender_moves(rendered_moves)  # unrender all moves
+                        
+                        (boardData, boardSetup) = capture_piece(held_piece_tile, tile)
+                        
+                        heldPieceData = (
+                            False, "b" if heldPieceData[1][0] == "w" else "w")
     else:
         # pick up a piece
         piece_name = boardSetup[y_pos][x_pos]
-        
+
         if piece_name == "":
             return
-        
+
         if piece_name[0] == heldPieceData[1][0]:
             piece_data = select_piece(tile)
 
@@ -108,9 +136,9 @@ def on_click(event):
     if holding:
         king_moves = []
 
-        if current_turn == "w": # white's turn, see if white is in check
+        if current_turn == "w":  # white's turn, see if white is in check
             king_moves = available_moves["wKing1"]
         else:
             king_moves = available_moves["bKing1"]
-        
-        #print(king_moves)
+
+        # print(king_moves)

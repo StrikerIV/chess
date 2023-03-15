@@ -140,25 +140,39 @@ def calculate_moves(piece_data, position):
         
         # castling
         if name not in moved_pieces: # if the king has not been moved
-            print(name, moved_pieces, "not moved ayo?")
             color = name[0]
 
-            if color + "Rook1" not in moved_pieces: # left rook has not been moved (castling to the left)
-                if board[ypos][1] == "" and board[ypos][2] == "" and board[ypos][3] == "": # if the squares are empty
-                    moves.append((convert_notation((2, ypos), True), "castle-m")) # middle square for castling ( clicked on the middle square)
-                    moves.append((convert_notation((0, ypos), True), "castle")) # left square for castling (clicked on the rook)
+            if color + "Rook1" not in moved_pieces: # left-side castle
+                x1, x2, x3 = (1, 2, 3)
+                m1, m2 = (2, 0)
                 
-            if color + "Rook2" not in moved_pieces: # right rook has not been moved (castling to the left)
-                if board[ypos][5] == "" and board[ypos][6] == "": # if the squares are empty
-                    moves.append((convert_notation((6, ypos), True), "castle-m-q")) # middle square for castling ( clicked on the middle square)
-                    moves.append((convert_notation((7, ypos), True), "castle-q")) # left square for castling (clicked on the rook)
+                if color == "b":
+                    x1, x2, x3 = (4, 5, 6)
+                    m1, m2 = (6, 7)
+                
+                if board[ypos][x1] == "" and board[ypos][x2] == "" and board[ypos][x3] == "": # if the squares are empty
+                    moves.append((convert_notation((m1, ypos), True), "castle-m")) # middle square for castling ( clicked on the middle square)
+                    moves.append((convert_notation((m2, ypos), True), "castle")) # left square for castling (clicked on the rook)
+            
+            if color + "Rook2" not in moved_pieces: # right rook has not been moved (castling to the right)
+                x1, x2 = (5, 6)
+                m1, m2 = (6, 7)
+                
+                if color == "b":
+                    x1, x2 = (1, 2)
+                    m1, m2 = (2, 0)
                     
+                if board[ypos][x1] == "" and board[ypos][x2] == "": # if the squares are empty
+                    moves.append((convert_notation((m1, ypos), True), "castle-m-q")) # middle square for castling ( clicked on the middle square)
+                    moves.append((convert_notation((m2, ypos), True), "castle-q")) # left square for castling (clicked on the rook)
+
     if name[0] == "b": # rotate the moves back to the original board (for the black pieces)
         new_moves = []
 
         for move in moves:
+            new_move = rotate_notation(move[0])
             new_moves.append((rotate_notation(move[0]), move[1]))  # orient the moves to the board
-
+            
         return new_moves
     else:
         return moves

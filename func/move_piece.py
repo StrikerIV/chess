@@ -6,6 +6,7 @@ from func.locate_piece import locate_piece
 
 def move_piece(old, new, move_type=False): # old & new are chess notation, move the piece at old to new, assume the move is valid
 
+    print("moving", old[0], "to", new)
     (old_pos, piece_id) = old
     
     old_pos = convert_notation(old_pos, False) # convert the old position to a tuple
@@ -20,13 +21,13 @@ def move_piece(old, new, move_type=False): # old & new are chess notation, move 
     new_x = new_pos[0]
     new_y = new_pos[1]
 
+    print(boardSetup, "setup")
     piece_name = boardSetup[old_y][old_x] # get the piece name
     piece_sprite_name = piece_name.replace(piece_name[-1], "")
 
     moved_pieces.append(piece_name)
 
     if move_type == "enPassant":
-        print("en passanting")
         captured_pawn_id = boardData[new_y + 1][new_x]
         captured_pawn_name = boardSetup[new_y + 1][new_x]
 
@@ -63,6 +64,10 @@ def castle(king, rook, flags): # castle the king and rook
     (king_x, king_y) = (7, 2)
     (rook_x, rook_y) = (7, 3)
 
+    if "-q" in flags:
+        (king_x, king_y) = (7, 6)
+        (rook_x, rook_y) = (7, 5)
+        
     if king[0] == "b":
         king_x = abs(7 - king_x)
         rook_x = abs(7 - rook_x)
@@ -82,15 +87,18 @@ def castle(king, rook, flags): # castle the king and rook
     moved_pieces.append(king)
     moved_pieces.append(rook)
 
-    boardSetup[king_x][king_y + 2] = "" # good
-    boardSetup[rook_x][rook_y - 3] = ""
-    boardSetup[king_x][king_y] = king
-    boardSetup[rook_x][rook_y] = rook
+    if not "-q" in flags: # update board for king side castle
+        boardSetup[king_x][king_y + 2] = "" # good
+        boardSetup[rook_x][rook_y - 3] = ""
+        boardSetup[king_x][king_y] = king
+        boardSetup[rook_x][rook_y] = rook
 
-    boardData[king_x][king_y + 2] = "" # good
-    boardData[rook_x][rook_y - 3] = ""
-    boardData[king_x][king_y] = new_king
-    boardData[rook_x][rook_y] = new_rook
+        boardData[king_x][king_y + 2] = "" # good
+        boardData[rook_x][rook_y - 3] = ""
+        boardData[king_x][king_y] = new_king
+        boardData[rook_x][rook_y] = new_rook
+    else:
+        print("update board for queen-side castle")
 
     return boardData, boardSetup
 

@@ -6,7 +6,7 @@ def convert_notation(position, chess_notation=False): # chess_notation = True wh
         (x, y) = position
 
         letter = chr(x + 97)
-        number = abs(y)
+        number = abs(8 - y)
 
         return letter + str(number)
     else:
@@ -14,6 +14,6 @@ def convert_notation(position, chess_notation=False): # chess_notation = True wh
         number = position[1]
 
         x = ord(letter) - 97
-        y = int(number)
+        y = abs(8 - int(number))
 
         return x, y

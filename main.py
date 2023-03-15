@@ -22,7 +22,7 @@ def main():
             tile = convert_notation((x_pos, y_pos), True)
 
             if x_pos == 0: # add numbers
-                canvas.create_text(x + 8, y + 3, text=abs(8 - int(tile[1])), fill="gray28" if (x + y) % 200 == 0 else "white", anchor=NW, font=("Arial", 16))
+                canvas.create_text(x + 8, y + 3, text=tile[1], fill="gray28" if (x + y) % 200 == 0 else "white", anchor=NW, font=("Arial", 16))
             if y_pos == 7: # add letters
                 canvas.create_text((x + 100) - 8, (y + 100) - 3, text=tile[0], fill="gray28" if (x + y) % 200 == 0 else "white", anchor=SE, font=("Arial", 16))
 
